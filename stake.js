@@ -1,8 +1,11 @@
 const fs = require('fs');
-const SuiClient = require('@mysten/sui.js');  // Pastikan sudah install package ini
+const { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } = require('@mysten/sui.js');  // Gunakan import yang benar
 
 // Membaca private key dari file data.txt
 const privateKey = fs.readFileSync('data.txt', 'utf-8').trim();
+
+// Mengonversi private key ke dalam bentuk Keypair
+const keypair = Ed25519Keypair.fromSecretKey(Buffer.from(privateKey, 'base64'));
 
 class COINENUM {
   static SUI = "0x2::sui::SUI";
@@ -12,19 +15,19 @@ class COINENUM {
 const STAKENODEOPERATOR = "0xcf4b9402e7f156bc75082bc07581b0829f081ccfc8c444c71df4536ea33d094a";
 
 class Staking {
-  constructor(privateKey) {
-    this.acc = privateKey;
-    this.txCount = 0;
-    this.client = new SuiClient({ url: 'https://fullnode.testnet.sui.io' }); // Sui Testnet RPC
+  constructor(keypair) {
+    this.acc = keypair.getPublicKey().toSuiAddress();  // Dapatkan alamat dari keypair
+    this.signer = new RawSigner(keypair, new JsonRpcProvider(getFullnodeUrl('testnet')));  // Gunakan JsonRpcProvider untuk koneksi testnet
     this.walrusAddress = COINENUM.WAL;
   }
 
   // Fungsi untuk menampilkan saldo WAL
   async getBalance() {
     try {
-      const balances = await this.client.getBalance(this.acc);
-      const walBalance = balances.find(b => b.coinType === COINENUM.WAL);
-      return walBalance ? walBalance.balance : 0;
+      const coins = await this.signer.provider.getCoins({ owner: this.acc });
+      const walCoins = coins.filter(c => c.coinType === COINENUM.WAL);
+      const walBalance = walCoins.reduce((acc, coin) => acc + coin.balance, 0);
+      return walBalance;
     } catch (error) {
       console.error('Gagal mendapatkan saldo:', error);
       return 0;
@@ -35,8 +38,7 @@ class Staking {
   async stake(amount) {
     try {
       console.log('Proses staking dimulai...');
-      const tx = await this.client.moveCall({
-        signer: this.acc,
+      const tx = await this.signer.moveCall({
         packageObjectId: STAKENODEOPERATOR,
         module: 'staking',
         function: 'stake',
@@ -46,7 +48,7 @@ class Staking {
       });
 
       console.log('Transaksi staking sedang dikirim...');
-      const result = await this.client.executeTransaction(tx);
+      const result = await this.signer.executeTransaction(tx);
       console.log('Status transaksi:', result.status);
     } catch (error) {
       console.error('Gagal staking:', error);
@@ -55,7 +57,7 @@ class Staking {
 }
 
 async function main() {
-  const staking = new Staking(privateKey);
+  const staking = new Staking(keypair);
 
   // Menampilkan alamat dompet
   console.log('Alamat:', staking.acc);
