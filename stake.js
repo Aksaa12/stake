@@ -1,3 +1,7 @@
+import { JsonRpcProvider } from '@mysten/sui.js/dist/provider';
+import { Ed25519Keypair } from '@mysten/sui.js/dist/crypto';
+import { RawSigner } from '@mysten/sui.js/dist/signer';
+import { getFullnodeUrl } from '@mysten/sui.js/dist/util';
 import fs from 'fs';
 import { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } from '@mysten/sui.js';
 
