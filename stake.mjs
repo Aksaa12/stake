@@ -1,5 +1,6 @@
-import fs from 'fs'; // Use 'fs' for synchronous file reading
+import fs from 'fs';
 import { Ed25519Keypair, RawSigner, JsonRpcProvider, getFullnodeUrl } from '@mysten/sui.js';
+import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
 
 // Fungsi untuk membaca kunci privat dari file
 function loadPrivateKeys() {
@@ -7,12 +8,9 @@ function loadPrivateKeys() {
     return data.split('\n').filter(line => line.trim() !== ''); // Menghapus baris kosong
 }
 
-// Memuat kunci privat dari file
 const privateKeys = loadPrivateKeys();
-const trimmedKey = privateKeys[0].trim(); // Mengambil kunci pertama, pastikan file tidak kosong
-
-// Mengonversi private key ke dalam bentuk Keypair
-const keypair = Ed25519Keypair.fromSecretKey(Buffer.from(trimmedKey, 'base64'));
+const privateKeyData = privateKeys[0]; // Mengambil kunci privat pertama
+const keypair = Ed25519Keypair.fromSecretKey(decodeSuiPrivateKey(privateKeyData));
 
 class COINENUM {
     static SUI = "0x2::sui::SUI";
@@ -49,7 +47,7 @@ class Staking {
                 function: 'stake',
                 typeArguments: [COINENUM.WAL],
                 arguments: [amount],
-                gasBudget: 10000
+                gasBudget: 10000 // Sesuaikan jika perlu
             });
 
             console.log('Transaksi staking sedang dikirim...');
