@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } = require('@mysten/sui.js');  // Gunakan import yang benar
+import fs from 'fs';  // Ubah dari require ke import
+import { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } from '@mysten/sui.js';
 
 // Membaca private key dari file data.txt
 const privateKey = fs.readFileSync('data.txt', 'utf-8').trim();
