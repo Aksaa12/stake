@@ -1,5 +1,8 @@
 import fs from 'fs';
-import { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } from '@mysten/sui.js';
+import { Ed25519Keypair, RawSigner, JsonRpcProvider, getFullnodeUrl } from '@mysten/sui.js';
+
+// Rest of your code...
+
 
 // Membaca private key dari file data.txt
 const privateKey = await fs.promises.readFile('data.txt', 'utf-8');
