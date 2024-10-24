@@ -1,12 +1,12 @@
 import fs from 'fs';
-import * as Sui from '@mysten/sui.js';
+import { JsonRpcProvider, Ed25519Keypair, RawSigner, getFullnodeUrl } from '@mysten/sui.js';
 
 // Membaca private key dari file data.txt
-const privateKey = await fs.promises.readFile('data.txt', 'utf-8'); // Ubah ke promosi
+const privateKey = await fs.promises.readFile('data.txt', 'utf-8');
 const trimmedKey = privateKey.trim();
 
 // Mengonversi private key ke dalam bentuk Keypair
-const keypair = Sui.Ed25519Keypair.fromSecretKey(Buffer.from(trimmedKey, 'base64'));
+const keypair = Ed25519Keypair.fromSecretKey(Buffer.from(trimmedKey, 'base64'));
 
 class COINENUM {
   static SUI = "0x2::sui::SUI";
@@ -17,12 +17,11 @@ const STAKENODEOPERATOR = "0xcf4b9402e7f156bc75082bc07581b0829f081ccfc8c444c71df
 
 class Staking {
   constructor(keypair) {
-    this.acc = keypair.getPublicKey().toSuiAddress();  // Dapatkan alamat dari keypair
-    this.signer = new RawSigner(keypair, new JsonRpcProvider(getFullnodeUrl('testnet')));  // Gunakan JsonRpcProvider untuk koneksi testnet
+    this.acc = keypair.getPublicKey().toSuiAddress();
+    this.signer = new RawSigner(keypair, new JsonRpcProvider(getFullnodeUrl('testnet')));
     this.walrusAddress = COINENUM.WAL;
   }
 
-  // Fungsi untuk menampilkan saldo WAL
   async getBalance() {
     try {
       const coins = await this.signer.provider.getCoins({ owner: this.acc });
@@ -35,7 +34,6 @@ class Staking {
     }
   }
 
-  // Fungsi untuk staking ke node walrustaking
   async stake(amount) {
     try {
       console.log('Proses staking dimulai...');
@@ -59,17 +57,12 @@ class Staking {
 
 async function main() {
   const staking = new Staking(keypair);
-
-  // Menampilkan alamat dompet
   console.log('Alamat:', staking.acc);
-
-  // Menampilkan saldo WAL sebelum staking
   const balance = await staking.getBalance();
   console.log('Saldo WAL sebelum staking:', balance);
 
-  // Mengecek apakah saldo cukup untuk staking 1 WAL
   if (balance >= 1) {
-    await staking.stake(1);  // Staking 1 WAL
+    await staking.stake(1);
   } else {
     console.log('Saldo tidak cukup untuk staking 1 WAL.');
   }
