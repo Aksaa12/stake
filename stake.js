@@ -1,6 +1,7 @@
 import fs from 'fs';
-import { Ed25519Keypair, RawSigner, JsonRpcProvider, getFullnodeUrl } from '@mysten/sui.js';
+import { RawSigner, JsonRpcProvider, getFullnodeUrl } from '@mysten/sui.js';
 import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 
 // Fungsi untuk membaca kunci privat dari file
 function loadPrivateKeys() {
