@@ -1,7 +1,7 @@
-import fs from 'fs';
-import { RawSigner, JsonRpcProvider, getFullnodeUrl } from '@mysten/sui.js';
-import { decodeSuiPrivateKey } from "@mysten/sui/cryptography";
-import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+const fs = require('fs');
+const { RawSigner, JsonRpcProvider, getFullnodeUrl } = require('@mysten/sui');
+const { Ed25519Keypair } = require('@mysten/sui/keypairs');
+const { decodeSuiPrivateKey } = require('@mysten/sui/cryptography');
 
 // Fungsi untuk membaca kunci privat dari file
 function loadPrivateKeys() {
